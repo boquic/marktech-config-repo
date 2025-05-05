@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: my-service
+
+example:
+  message: Hola desde el servidor de configuración
