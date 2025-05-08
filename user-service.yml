@@ -9,7 +9,7 @@ spring:
     name: user-service # Redundante si el archivo ya se llama user-service.yml, pero no hace daño
   # datasource, jpa, etc., pueden ser específicas del entorno y gestionadas aquí
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/usersdb} # Permitir sobrescritura por variable de entorno
+    url: ${DB_URL:jdbc:postgresql://localhost:5433/usersdb} # Permitir sobrescritura por variable de entorno
     username: ${DB_USERNAME_CONFIG_REPO:postgres} # Usar nombres de variables de entorno distintos si es necesario
     password: ${DB_PASSWORD_CONFIG_REPO:123456}   # ¡¡¡NO USAR EN PRODUCCIÓN!!! Usar Vault, env vars, o encriptación del Config Server.
     driver-class-name: org.postgresql.Driver
