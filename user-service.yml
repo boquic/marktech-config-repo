@@ -1,18 +1,46 @@
-spring:
-  application:
-    name: user-service
-
-  datasource:
-    url: jdbc:postgresql://localhost:5432/usersdb
-    username: postgres
-    password: 123456
-    driver-class-name: org.postgresql.Driver
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+# user-service.yml (o user-service-default.yml, o user-service-<profile>.yml)
+# Este archivo DEBE estar en tu repositorio Git que el Config Server está sirviendo.
 
 server:
-  port: 8083
+  port: 8083 # Puerto para user-service, puede ser gestionado por el Config Server
+
+spring:
+  application:
+    name: user-service # Redundante si el archivo ya se llama user-service.yml, pero no hace daño
+  # datasource, jpa, etc., pueden ser específicas del entorno y gestionadas aquí
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/usersdb} # Permitir sobrescritura por variable de entorno
+    username: ${DB_USERNAME_CONFIG_REPO:postgres} # Usar nombres de variables de entorno distintos si es necesario
+    password: ${DB_PASSWORD_CONFIG_REPO:123456}   # ¡¡¡NO USAR EN PRODUCCIÓN!!! Usar Vault, env vars, o encriptación del Config Server.
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update # O 'validate' en producción
+    show-sql: true # False en producción
+    properties:
+      hibernate:
+        format_sql: true # False en producción
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+# --- Configuración JWT ---
+# Estas propiedades serán usadas por JwtConfig en user-service
+jwt:
+  secret: ${dxHgXOPeU2gu6V9YoVzGyWL+OAKRPWzn0mrRNEsUjDpUbvGM7h4wlXyzRknsYId5RtR2I0F3OQXpXzyqCPZs8g==} # ¡PLACEHOLDER!
+  expiration-ms: 86400000    # 24 horas
+  refresh-expiration-ms: 2592000000 # 30 días
+  # Opcional, si los necesitas y los añades a JwtConfig:
+  # issuer: userservice_from_config_server
+  # header: Authorization
+  # prefix: Bearer
+
+# --- Configuración de Eureka ---
+# Es buena práctica gestionar esto también desde el Config Server
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/} # URL de tu servidor Eureka para este entorno
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    # hostname: ${eureka.instance.ip-address} # O una configuración específica del host
