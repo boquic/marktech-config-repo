@@ -8,7 +8,7 @@ spring:
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/productsdb}
     username: ${DB_USERNAME:postgres} # Nombre de variable de entorno más genérico
-    password: ${DB_PASSWORD:yoursecurepassword}   # ¡CAMBIAR Y EXTERNALIZAR DE FORMA SEGURA EN PRODUCCIÓN!
+    password: ${DB_PASSWORD:123456}   # ¡CAMBIAR Y EXTERNALIZAR DE FORMA SEGURA EN PRODUCCIÓN!
     driver-class-name: org.postgresql.Driver
     # Considera añadir configuraciones de HikariCP aquí si necesitas optimizar el pool
 
