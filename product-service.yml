@@ -5,38 +5,32 @@ spring:
   application:
     name: product-service}
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/productsdb} # Permitir sobrescritura por variable de entorno
-    username: ${DB_USERNAME_CONFIG_REPO:postgres} # Usar nombres de variables de entorno distintos si es necesario
-    password: ${DB_PASSWORD_CONFIG_REPO:123456}   # ¡¡¡NO USAR EN PRODUCCIÓN!!! Usar Vault, env vars, o encriptación del Config Server.
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/productsdb} 
+    username: ${DB_USERNAME_CONFIG_REPO:postgres} 
+    password: ${DB_PASSWORD_CONFIG_REPO:123456}  
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: update # O 'validate' en producción
-    show-sql: true # False en producción
+      ddl-auto: update 
+    show-sql: true 
     properties:
       hibernate:
-        format_sql: true # False en producción
+        format_sql: true 
         dialect: org.hibernate.dialect.PostgreSQLDialect
   elasticsearch:
     uris: ${ELASTICSEARCH_URIS:http://localhost:9200} 
 
 jwt:
-  secret: ${dxHgXOPeU2gu6V9YoVzGyWL+OAKRPWzn0mrRNEsUjDpUbvGM7h4wlXyzRknsYId5RtR2I0F3OQXpXzyqCPZs8g==} # ¡PLACEHOLDER!
-  expiration-ms: 86400000    # 24 horas
-  refresh-expiration-ms: 2592000000 # 30 días
-  # Opcional, si los necesitas y los añades a JwtConfig:
-  # issuer: userservice_from_config_server
-  # header: Authorization
-  # prefix: Bearer
+  secret: ${dxHgXOPeU2gu6V9YoVzGyWL+OAKRPWzn0mrRNEsUjDpUbvGM7h4wlXyzRknsYId5RtR2I0F3OQXpXzyqCPZs8g==} 
+  expiration-ms: 86400000   
+  refresh-expiration-ms: 2592000000 
 
-# --- Configuración de Eureka ---
-# Es buena práctica gestionar esto también desde el Config Server
 eureka:
   client:
     serviceUrl:
-      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/} # URL de tu servidor Eureka para este entorno
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/} 
     register-with-eureka: true
     fetch-registry: true
   instance:
     prefer-ip-address: true
-    # hostname: ${eureka.instance.ip-address} # O una configuración específica del host
+
