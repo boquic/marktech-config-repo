@@ -1,36 +1,75 @@
 server:
-  port: 8084 
+  port: ${PRODUCT_SERVICE_PORT:8082} # Usar variable de entorno con fallback. Asegúrate que sea diferente a otros servicios.
 
 spring:
   application:
-    name: product-service}
+    name: product-service # Corregida la llave extra
+
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/productsdb} 
-    username: ${DB_USERNAME_CONFIG_REPO:postgres} 
-    password: ${DB_PASSWORD_CONFIG_REPO:123456}  
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/productsdb}
+    username: ${DB_USERNAME:postgres} # Nombre de variable de entorno más genérico
+    password: ${DB_PASSWORD:yoursecurepassword}   # ¡CAMBIAR Y EXTERNALIZAR DE FORMA SEGURA EN PRODUCCIÓN!
     driver-class-name: org.postgresql.Driver
+    # Considera añadir configuraciones de HikariCP aquí si necesitas optimizar el pool
+
   jpa:
     hibernate:
-      ddl-auto: update 
-    show-sql: true 
+      ddl-auto: update # OK para desarrollo temprano sin Flyway. Cambiar a 'validate' o 'none' más adelante.
+    show-sql: ${SHOW_SQL:true} # Mejor que el Config Server controle si se muestra SQL
     properties:
       hibernate:
-        format_sql: true 
+        format_sql: ${FORMAT_SQL:true} # Mejor que el Config Server controle el formato
         dialect: org.hibernate.dialect.PostgreSQLDialect
-  elasticsearch:
-    uris: ${ELASTICSEARCH_URIS:http://localhost:9200} 
 
-jwt:
-  secret: ${dxHgXOPeU2gu6V9YoVzGyWL+OAKRPWzn0mrRNEsUjDpUbvGM7h4wlXyzRknsYId5RtR2I0F3OQXpXzyqCPZs8g==} 
-  expiration-ms: 86400000   
-  refresh-expiration-ms: 2592000000 
+  elasticsearch:
+    uris: ${ELASTICSEARCH_URIS:http://localhost:9200}
+    # username: ${ELASTICSEARCH_USERNAME:} # Si es necesario
+    # password: ${ELASTICSEARCH_PASSWORD:} # Si es necesario
+
+  # Flyway deshabilitado (puedes omitir esta sección si el default en application.yml ya es false)
+  # flyway:
+  #   enabled: false
+
+# --- Propiedades JWT para la validación de tokens ---
+# --- Debe coincidir con el prefijo usado en JwtConfigProperties.java (app.jwt) ---
+app:
+  jwt:
+    # Este es el secreto usado para VALIDAR la firma de los tokens JWT.
+    # Debe ser el MISMO secreto (para HMAC) o la CLAVE PÚBLICA (para RSA/ECDSA)
+    # que user-service usa para FIRMAR los tokens.
+    # ¡NO LO PONGAS EN TEXTO PLANO EN GIT SI EL REPO ES PÚBLICO O PARA PRODUCCIÓN!
+    # Usa encriptación del Config Server, Vault, o una variable de entorno segura.
+    secret: "${JWT_SECRET_KEY:dxHgXOPeU2gu6V9YoVzGyWL+OAKRPWzn0mrRNEsUjDpUbvGM7h4wlXyzRknsYId5RtR2I0F3OQXpXzyqCPZs8g==}"
+    # NOTA: Si "dxHgX..." es el secreto literal, quita "${...}" y ponlo entre comillas:
+    # secret: "dxHgXOPeU2gu6V9YoVzGyWL+OAKRPWzn0mrRNEsUjDpUbvGM7h4wlXyzRknsYId5RtR2I0F3OQXpXzyqCPZs8g=="
+
+    # Las siguientes propiedades (expiration-ms, refresh-expiration-ms) NO son usadas por JwtConfigProperties
+    # ni por JwtTokenValidator tal como los definimos para product-service (que solo valida).
+    # Puedes omitirlas aquí para product-service o añadir los campos correspondientes a JwtConfigProperties.java
+    # si por alguna razón product-service necesita conocer estos valores.
+    # expiration-ms: 86400000
+    # refresh-expiration-ms: 2592000000
 
 eureka:
   client:
     serviceUrl:
-      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/} 
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
     register-with-eureka: true
     fetch-registry: true
   instance:
     prefer-ip-address: true
+    # Considera un instance-id más explícito si es necesario:
+    # instance-id: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
 
+# --- Logging (Puede ser gestionado por un application.yml global en Config Server o aquí) ---
+# logging:
+#   level:
+#     com.marktech.product_service: DEBUG # O INFO en producción
+#     org.springframework.security: INFO
+
+# --- Actuator (Puede ser gestionado por un application.yml global en Config Server o aquí) ---
+# management:
+#   endpoints:
+#     web:
+#       exposure:
+#         include: "health,info,metrics,prometheus"
