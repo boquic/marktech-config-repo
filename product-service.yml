@@ -23,8 +23,8 @@ spring:
 
   elasticsearch:
     uris: ${ELASTICSEARCH_URIS:http://localhost:9200}
-    username: ${ELASTICSEARCH_USERNAME:elastic} # Añadido usuario 'elastic' como posible default
-    password: ${ELASTICSEARCH_PASSWORD:kbMzrHjkybu7cJkPtgIN} # Si es necesario
+    #username: ${ELASTICSEARCH_USERNAME:elastic} # Añadido usuario 'elastic' como posible default
+    #password: ${ELASTICSEARCH_PASSWORD:kbMzrHjkybu7cJkPtgIN} # Si es necesario
 
   # Flyway deshabilitado (puedes omitir esta sección si el default en application.yml ya es false)
   # flyway:
